@@ -1,70 +1,97 @@
-# Getting Started with Create React App
+## TODO-App in React
+Erstelle eine einfache ToDo-Liste-Anwendung, in der du Aufgaben hinzufügen, als erledigt markieren und löschen kannst.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Funktionen:
+- Eingabefeld zum Hinzufügen neuer Aufgaben.
+- Liste der Aufgaben mit Checkboxen zum Markieren als erledigt.
+- Löschbutton für jede Aufgabe.
+Hinweise:
+- Verwende `useState` für die Verwaltung der Aufgaben und des Eingabetextes.
+- Überlege, wie du Aufgaben eindeutig identifizieren kannst (z.B. mit einer zufällig generierten ID).
+- Nutze Event-Handler für das Hinzufügen von Aufgaben und das Ändern des Erledigungsstatus.
+- Beachte, dass alle Daten nur lokal im Browser gespeichert werden und nicht persistent sind, wenn der Browser geschlossen wird.
+1. Das Projekt initialisieren
+Wir erstellen ein neues React-Projekt mit `create-react-app` und wechseln in das Projektverzeichnis:
+```
+npx create-react-app todo-app
+cd todo-app
+```
+2. Die Anwendung entwickeln
+Wir navigieren in die Hauptkomponente `src/App.js`. Hier ist dann die Hauptlogik der App.
+Wir importieren zunäcsht die React-Biblothek mit `import React from 'react';` und die `useState`-Funktion mit `import { useState } from 'react';`. Der `useState`-Hook wird verwendet, um den Zustand der Anwendung zu verwalten. Außerdem wird Stylesheet `App.css` importiert.
+```
+import React, { useState } from 'react';
+import './App.css';
+```
+Als nächstes definieren wir die Hauptkomponente App mithilfe der Funktion `function App() { ... }`. In dieser Funktion deklarieren wir `todos` als Zustand, der eine leere Liste enthält und `setTodos` als Funktion zum Aktualisieren des Zustands. Die `useState`-Funktion wird verwendet, um den Anfangszustand der Anwendung zu definieren. Zudem deklariert `input` den Zustand für den Texteingabewert. Die `setInput`-Funktion wird verwendet, um den Texteingabewert zu aktualisieren. 
+```
+function App() {
+  const [todos, setTodos] = useState([]);
+  const [input, setInput] = useState('');
+```
+Als nächstes wollen wir Aufgaben hinzufügen. Dazu ertellen wir eine `addTodo`-Funktion, die eine neue Aufgabe erstellt und zur Liste hinzufügt. mit `if(input.trim())` überprüfen wir erstmal, ob der Eingabetext nicht leer ist. Danach werstellen wir mit `const newTodo = ` ein neues Todo-Objekt mit einer zufälligen ID, dem eingegeben Text und einem completed-Flag, das anzeigt, ob die Aufgabe abgeschlossen ist. Danach aktualisierern wir die todos-Liste und fügen das neue Todo-Objekt hinzu.
+Mit `setInput('')` wird das Eingabefeld geleert.
+```
+  const addTodo = () => {
+    if (input.trim()) {
+      const newTodo = {
+        id: Math.random(),
+        text: input,
+        completed: false
+      };
+      setTodos([...todos, newTodo]);
+      setInput('');
+    }
+  };
+```
+Als nächstes wollen wir den Aufgabenstatus ändern. const toggleComplete = (id) => { ... }: Definiert die toggleComplete-Funktion, die den completed-Status einer Aufgabe ändert.
+setTodos(todos.map(todo => ... )): Aktualisiert die todos-Liste. Wenn die ID einer Aufgabe mit der angegebenen ID übereinstimmt, wird deren completed-Flag umgekehrt, andernfalls bleibt sie unverändert.
+```
+  const toggleComplete = (id) => {
+    setTodos(
+      todos.map(todo =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+```
+Danach wollen wir die Funktion implementieren zum Aufgaben löschen. const deleteTodo = (id) => { ... }: Definiert die deleteTodo-Funktion, die eine Aufgabe löscht.
+setTodos(todos.filter(todo => ... )): Aktualisiert die todos-Liste und entfernt die Aufgabe mit der angegebenen ID.
+```
+  const deleteTodo = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+```
+Dann können wir die Hauptkomponente rendern. 
+```
+return (
+  <div className="App">
+    <h1>To-Do Liste</h1>
+    <input 
+      type="text" 
+      value={input} 
+      onChange={(e) => setInput(e.target.value)} 
+      placeholder="Neue Aufgabe" 
+    />
+    <button onClick={addTodo}>Hinzufügen</button>
+    <ul>
+      {todos.map(todo => (
+        <li key={todo.id} className={todo.completed ? 'completed' : ''}>
+          <input 
+            type="checkbox" 
+            checked={todo.completed} 
+            onChange={() => toggleComplete(todo.id)} 
+          />
+          {todo.text}
+          <button onClick={() => deleteTodo(todo.id)}>Löschen</button>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+````
+Danach müssen wir die App nur noch exportieren.
+```
+export default App;
+```
